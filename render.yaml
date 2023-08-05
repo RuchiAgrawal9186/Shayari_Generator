@@ -1,0 +1,11 @@
+version: 1
+services:
+  - name: jokes
+    env:
+      - key: OPENAI_API_KEY
+        # Replace 'your-openai-api-key' with your actual OpenAI API key
+        value: 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
+    buildCommand: npm install
+    startCommand: node app.js
+    envVars:
+      NODE_ENV: production
