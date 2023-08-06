@@ -19,34 +19,25 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-app.post('/jokes', async (req, res) => {
+app.post('/shayri', async (req, res) => {
   try {
-    // let keyword = req.query.keyword;
-    // let  language = req.query.language;
+    
     const {keyword,language}=req.body
-    const numJokes = 3; // Number of jokes you want to generate
-
-    const jokes = [];
-
-    for (let i = 0; i < numJokes; i++) {
+    
 
       const response = await openai.createCompletion({
         model: "text-davinci-003",
-        prompt: `You are a comedian, so tell me a joke about ${keyword} in ${language}.`,
+        prompt: `You are a poet, so tell me a poet about ${keyword} in ${language}.`,
         max_tokens: 1000,//setting the words limit
         temperature: 1.2,
       });
 
       const joke = response.data.choices[0].text.trim();
-      jokes.push(joke);
 
-    }
-    const jokesText = jokes.join('\n\n');
-
-    res.json({ jokesText });
+    res.json({ joke });
   } catch (error) {
     console.error('Error:', error.message);
-    res.status(500).json({ error: 'Something went wrong' });
+    res.status(500).json({ error: error.message});
   }
 });
 
