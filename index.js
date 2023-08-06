@@ -1,6 +1,6 @@
 
 const express = require('express');
-const axios = require('axios');
+// const axios = require('axios');
 require('dotenv').config();
 
 const cors = require("cors")
@@ -11,31 +11,33 @@ const port = process.env.PORT || 8080;
 
 app.use(express.json());
 
-app.get('/jokes', async (req, res) => {
+const { Configuration, OpenAIApi } = require("openai");
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(configuration);
+
+app.post('/jokes', async (req, res) => {
   try {
-    let keyword = req.query.keyword;
-    let  language = req.query.language;
+    // let keyword = req.query.keyword;
+    // let  language = req.query.language;
+    const {keyword,language}=req.body
     const numJokes = 3; // Number of jokes you want to generate
 
     const jokes = [];
 
     for (let i = 0; i < numJokes; i++) {
-      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a comedian, so tell me a joke about ${keyword} in ${language}.`,
-          },
-        ],
-      }, {
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
+
+      const response = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: `You are a comedian, so tell me a joke about ${keyword} in ${language}.`,
+        max_tokens: 1000,//setting the words limit
+        temperature: 1.2,
       });
 
-      const joke = response.data.choices[0].message['content'].trim();
+      const joke = response.data.choices[0].text.trim();
       jokes.push(joke);
 
     }
